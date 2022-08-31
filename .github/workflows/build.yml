@@ -1,0 +1,65 @@
+name: Create Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  create-release:
+  
+    runs-on: windows-latest
+
+    steps:
+     - name: Checkout Code
+       uses: actions/checkout@v2
+       
+     - name: Check Versions
+       run: pwsh -ExecutionPolicy ByPass -File check-version.ps1
+       timeout-minutes: 10
+       
+     - name: Clone PortableApps.comInstaller
+       if: env.SHOULD_BUILD == 'yes'
+       uses: actions/checkout@v2
+       with:
+        repository: uroesch/PortableApps.comInstaller
+        ref: master
+        path: PortableApps.comInstaller
+
+     - name: Clone PortableApps.comLauncher
+       if: env.SHOULD_BUILD == 'yes'
+       uses: actions/checkout@v2
+       with:
+          repository: uroesch/PortableApps.comLauncher
+          ref: patched
+          path: PortableApps.comLauncher
+
+     - name: Run build script Build.ps1
+       if: env.SHOULD_BUILD == 'yes'
+       run: pwsh -ExecutionPolicy ByPass -File Build.ps1
+       timeout-minutes: 10
+     
+     - name: Create Tag using upstream Tag
+       if: env.SHOULD_BUILD == 'yes'
+       uses: actions/github-script@v3
+       env:
+          TAG: ${{ steps.upstream-tag.outputs.tag_name }}
+       with:
+          github-token: ${{ github.token }}
+          script: |
+            github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: "refs/tags/${{ steps.upstream-tag.outputs.tag_name }}",
+              sha: context.sha
+            })
+            
+     - name: Create release
+       if: env.SHOULD_BUILD == 'yes'
+       uses: ncipollo/release-action@v1
+       with:
+        artifacts: '*.paf.exe'
+        tag: ${{ steps.upstream-tag.outputs.tag_name }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        

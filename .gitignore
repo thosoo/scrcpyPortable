@@ -1,0 +1,10 @@
+
+./.DS_Store
+PrusaSlicerPortable/.DS_Store
+PrusaSlicerPortable/App/.DS_Store
+PrusaSlicerPortable/App/AppInfo/.DS_Store
+Data/PortableApps.comLauncherRuntimeData-PrusaSlicerPortable.ini
+Data/settings/PrusaSlicerPortableSettings.ini
+pac_installer_log.ini
+PrusaSlicerPortable/Other/Source/PortableApps.comInstaller*
+*.paf.exe
