@@ -27,7 +27,7 @@ elseif ($tag2 -match "RC")
 else{
     echo "UPSTREAM_TAG=$tag2" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
     $appinfo = Get-IniContent ".\scrcpyPortable\App\AppInfo\appinfo.ini"
-    if ($appinfo["Version"]["DisplayVersion"] -ne -join($tag2,".0")
+    if ($appinfo["Version"]["DisplayVersion"] -ne -join($tag2,".0")){
         $appinfo["Version"]["PackageVersion"]=-join($tag2,".0.0")
         $appinfo["Version"]["DisplayVersion"]=-join($tag2,".0")
 
