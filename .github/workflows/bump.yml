@@ -34,4 +34,4 @@ jobs:
       if: env.SHOULD_COMMIT == 'yes'
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
-        commit_message: env.UPSTREAM_TAG
+        commit_message: ${{ env.UPSTREAM_TAG }}
