@@ -44,14 +44,14 @@ jobs:
        if: env.SHOULD_BUILD == 'yes'
        uses: actions/github-script@v3
        env:
-          TAG: ${{ steps.upstream-tag.outputs.tag_name }}
+          TAG: ${{ env.UPSTREAM_TAG }}
        with:
           github-token: ${{ github.token }}
           script: |
             github.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: "refs/tags/${{ steps.upstream-tag.outputs.tag_name }}",
+              ref: "refs/tags/${{ env.UPSTREAM_TAG }}",
               sha: context.sha
             })
             
@@ -60,6 +60,6 @@ jobs:
        uses: ncipollo/release-action@v1
        with:
         artifacts: '*.paf.exe'
-        tag: ${{ steps.upstream-tag.outputs.tag_name }}
+        tag: ${{ env.UPSTREAM_TAG }}
         token: ${{ secrets.GITHUB_TOKEN }}
         
