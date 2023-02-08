@@ -13,7 +13,7 @@ jobs:
 
     steps:
      - name: Checkout Code
-       uses: actions/checkout@v2
+       uses: actions/checkout@v3
        
      - name: Check Versions
        run: pwsh -ExecutionPolicy ByPass -File check-version.ps1
