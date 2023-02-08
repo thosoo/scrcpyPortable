@@ -21,7 +21,7 @@ jobs:
        
      - name: Clone PortableApps.comInstaller
        if: env.SHOULD_BUILD == 'yes'
-       uses: actions/checkout@v2
+       uses: actions/checkout@v3
        with:
         repository: uroesch/PortableApps.comInstaller
         ref: main
@@ -29,7 +29,7 @@ jobs:
 
      - name: Clone PortableApps.comLauncher
        if: env.SHOULD_BUILD == 'yes'
-       uses: actions/checkout@v2
+       uses: actions/checkout@v3
        with:
           repository: uroesch/PortableApps.comLauncher
           ref: patched
