@@ -1,0 +1,41 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create-release:
+  
+    runs-on: windows-latest
+
+    steps:
+     - name: Checkout Code
+       uses: actions/checkout@v3
+       
+     - name: Check Versions
+       run: pwsh -ExecutionPolicy ByPass -File check-version.ps1
+       timeout-minutes: 10
+       
+     - name: Clone PortableApps.comInstaller
+       uses: actions/checkout@v3
+       with:
+        repository: uroesch/PortableApps.comInstaller
+        ref: main
+        path: PortableApps.comInstaller
+
+     - name: Clone PortableApps.comLauncher
+       uses: actions/checkout@v3
+       with:
+          repository: uroesch/PortableApps.comLauncher
+          ref: patched
+          path: PortableApps.comLauncher
+
+     - name: Run build script Build.ps1
+       run: pwsh -ExecutionPolicy ByPass -File Build.ps1
+       timeout-minutes: 10
+        
+     - name: Publish build to GH Actions
+       uses: actions/upload-artifact@v3
+       with:
+        path: '*.paf.exe'
+        name: build
