@@ -58,6 +58,17 @@ else{
         Write-Host "Bumped to $tag2"
         echo "SHOULD_COMMIT=yes" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
     }
+    $content64 = '@echo off'
+    $content64 += ".\win64\scrcpy-win64-v$tag2\scrcpy.exe %* && .\win64\scrcpy-win64-v$tag2\adb kill-server"
+    $content64 += ':: if the exit code is >= 1, then pause'
+    $content64 += 'if errorlevel 1 pause'
+    Set-Content -Value $content -Path '.\scrcpyPortable\App\win64.bat'
+    
+    $content32 = '@echo off'
+    $content32 += ".\win32\scrcpy-win32-v$tag2\scrcpy.exe %* && .\win32\scrcpy-win32-v$tag2\adb kill-server"
+    $content32 += ':: if the exit code is >= 1, then pause'
+    $content32 += 'if errorlevel 1 pause'
+    Set-Content -Value $content -Path '.\scrcpyPortable\App\win32.bat'
     else{
       Write-Host "No changes."
       echo "SHOULD_COMMIT=no" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
