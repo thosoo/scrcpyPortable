@@ -59,16 +59,24 @@ else{
         echo "SHOULD_COMMIT=yes" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
     }
     $content64 = '@echo off'
+    $content64 += "`r`n"
     $content64 += ".\win64\scrcpy-win64-v$tag2\scrcpy.exe %* && .\win64\scrcpy-win64-v$tag2\adb kill-server"
+    $content64 += "`r`n"
     $content64 += ':: if the exit code is >= 1, then pause'
+    $content64 += "`r`n"
     $content64 += 'if errorlevel 1 pause'
-    Set-Content -Value $content -Path '.\scrcpyPortable\App\win64.bat'
+    $content64 += "`r`n"
+    Set-Content -Value $content64 -Path '.\scrcpyPortable\App\win64.bat'
     
     $content32 = '@echo off'
+    $content32 += "`r`n"
     $content32 += ".\win32\scrcpy-win32-v$tag2\scrcpy.exe %* && .\win32\scrcpy-win32-v$tag2\adb kill-server"
+    $content32 += "`r`n"
     $content32 += ':: if the exit code is >= 1, then pause'
+    $content32 += "`r`n"
     $content32 += 'if errorlevel 1 pause'
-    Set-Content -Value $content -Path '.\scrcpyPortable\App\win32.bat'
+    $content32 += "`r`n"
+    Set-Content -Value $content32 -Path '.\scrcpyPortable\App\win32.bat'
     else{
       Write-Host "No changes."
       echo "SHOULD_COMMIT=no" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
