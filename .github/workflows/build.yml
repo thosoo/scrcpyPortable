@@ -63,3 +63,9 @@ jobs:
         tag: ${{ env.UPSTREAM_TAG }}
         token: ${{ secrets.GITHUB_TOKEN }}
         
+     - name: Publish build to GH Actions
+       uses: actions/upload-artifact@v3
+       with:
+        path: '*.paf.exe'
+        name: build
+
