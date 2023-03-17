@@ -12,6 +12,17 @@ jobs:
      - name: Checkout Code
        uses: actions/checkout@v3
        
+     - name: Install required PowerShell modules
+       if: steps.cacher.outputs.cache-hit != 'true'
+       shell: pwsh
+       run: |
+        Set-PSRepository PSGallery -InstallationPolicy Trusted
+        Install-Module PSIni -ErrorAction Stop
+      
+     - name: Bump
+       run: pwsh -ExecutionPolicy ByPass -File bump.ps1
+       timeout-minutes: 10
+       
      - name: Check Versions
        run: pwsh -ExecutionPolicy ByPass -File check-version.ps1
        timeout-minutes: 10
