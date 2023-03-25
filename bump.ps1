@@ -1,9 +1,12 @@
-try {
-  Import-Module PsIni
-} catch {
-  Install-Module -Scope CurrentUser PsIni
-  Import-Module PsIni
+# Import PsIni module, install it if not found
+$module = Get-Module -Name PsIni -ErrorAction SilentlyContinue
+if (!$module) {
+    Install-Module -Scope CurrentUser PsIni
+    Import-Module PsIni
+} else {
+    Import-Module PsIni
 }
+
 $repoName = "Genymobile/scrcpy"
 $releasesUri = "https://api.github.com/repos/$repoName/releases/latest"
 try { $tag = (Invoke-WebRequest $releasesUri | ConvertFrom-Json).tag_name }
@@ -54,29 +57,24 @@ else{
         $installer | Out-IniFile -Force -Encoding ASCII -Pretty -FilePath ".\scrcpyPortable\App\AppInfo\installer.ini"
 
         $appinfo | Out-IniFile -Force -Encoding ASCII -FilePath ".\scrcpyPortable\App\AppInfo\appinfo.ini"
+        
+        $win64Path = ".\win64\scrcpy-win64-v$tag2\"
+        $win32Path = ".\win32\scrcpy-win32-v$tag2\"
+
+        $commonContent = '@echo off`r`n'
+        $commonContent += "$win64Path\scrcpy.exe %* && $win64Path\adb kill-server`r`n"
+        $commonContent += ':: if the exit code is >= 1, then pause`r`n'
+        $commonContent += 'if errorlevel 1 pause`r`n'
+
+        $win64Content = $commonContent
+        $win32Content = $commonContent
+
+        Set-Content -Value $win64Content -Path '.\scrcpyPortable\App\win64.bat'
+        Set-Content -Value $win32Content -Path '.\scrcpyPortable\App\win32.bat'
 
         Write-Host "Bumped to $tag2"
         echo "SHOULD_COMMIT=yes" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
     }
-    $content64 = '@echo off'
-    $content64 += "`r`n"
-    $content64 += ".\win64\scrcpy-win64-v$tag2\scrcpy.exe %* && .\win64\scrcpy-win64-v$tag2\adb kill-server"
-    $content64 += "`r`n"
-    $content64 += ':: if the exit code is >= 1, then pause'
-    $content64 += "`r`n"
-    $content64 += 'if errorlevel 1 pause'
-    $content64 += "`r`n"
-    Set-Content -Value $content64 -Path '.\scrcpyPortable\App\win64.bat'
-    
-    $content32 = '@echo off'
-    $content32 += "`r`n"
-    $content32 += ".\win32\scrcpy-win32-v$tag2\scrcpy.exe %* && .\win32\scrcpy-win32-v$tag2\adb kill-server"
-    $content32 += "`r`n"
-    $content32 += ':: if the exit code is >= 1, then pause'
-    $content32 += "`r`n"
-    $content32 += 'if errorlevel 1 pause'
-    $content32 += "`r`n"
-    Set-Content -Value $content32 -Path '.\scrcpyPortable\App\win32.bat'
     else{
       Write-Host "No changes."
       echo "SHOULD_COMMIT=no" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
