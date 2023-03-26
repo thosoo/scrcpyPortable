@@ -29,29 +29,30 @@ if ($tag2 -match "alpha|beta|RC") {
 else{
     echo "UPSTREAM_TAG=$tag2" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
     $appinfo = Get-IniContent ".\scrcpyPortable\App\AppInfo\appinfo.ini"
-    if ($appinfo["Version"]["DisplayVersion"] -ne -join($tag2,".0")){
-        $appinfo["Version"]["PackageVersion"]=-join($tag2,".0.0")
-        $appinfo["Version"]["DisplayVersion"]=-join($tag2,".0")
+    if ($appinfo["Version"]["DisplayVersion"] -ne -join($tag2, ".0")) {
+        $appinfo["Version"]["PackageVersion"] = -join($tag2, ".0.0")
+        $appinfo["Version"]["DisplayVersion"] = -join($tag2, ".0")
 
-        $installer = Get-IniContent ".\scrcpyPortable\App\AppInfo\installer.ini"
-
+        $releasesInfo = Invoke-RestMethod -Uri $releasesUri
         $asset1Pattern = "*scrcpy-win32*"
-        $asset1 = (Invoke-WebRequest $releasesUri | ConvertFrom-Json).assets | Where-Object name -like $asset1Pattern
-        $asset1Download = $asset1.browser_download_url.replace('%2B','+')
-        $installer["DownloadFiles"]["DownloadURL"]=$asset1Download
-        $installer["DownloadFiles"]["DownloadName"]=$asset1.name.replace('.zip','')
-        $installer["DownloadFiles"]["DownloadFilename"]=$asset1.name
+        $asset1 = $releasesInfo.assets | Where-Object { $_.name -like $asset1Pattern }
+        $asset1Download = $asset1.browser_download_url.Replace('%2B','+')
 
         $asset2Pattern = "*scrcpy-win64*"
-        $asset2 = (Invoke-WebRequest $releasesUri | ConvertFrom-Json).assets | Where-Object name -like $asset2Pattern
-        $asset2Download = $asset2.browser_download_url.replace('%2B','+')
-        $installer["DownloadFiles"]["Download2URL"]=$asset2Download
-        $installer["DownloadFiles"]["Download2Name"]=$asset2.name.replace('.zip','')
-        $installer["DownloadFiles"]["Download2Filename"]=$asset2.name
+        $asset2 = $releasesInfo.assets | Where-Object { $_.name -like $asset2Pattern }
+        $asset2Download = $asset2.browser_download_url.Replace('%2B','+')
+
+        $installer = Get-IniContent ".\scrcpyPortable\App\AppInfo\installer.ini"
+        $installer["DownloadFiles"]["DownloadURL"] = $asset1Download
+        $installer["DownloadFiles"]["DownloadName"] = $asset1.name.Replace('.zip', '')
+        $installer["DownloadFiles"]["DownloadFilename"] = $asset1.name
+        $installer["DownloadFiles"]["Download2URL"] = $asset2Download
+        $installer["DownloadFiles"]["Download2Name"] = $asset2.name.Replace('.zip', '')
+        $installer["DownloadFiles"]["Download2Filename"] = $asset2.name
         $installer | Out-IniFile -Force -Encoding ASCII -Pretty -FilePath ".\scrcpyPortable\App\AppInfo\installer.ini"
 
         $appinfo | Out-IniFile -Force -Encoding ASCII -FilePath ".\scrcpyPortable\App\AppInfo\appinfo.ini"
-        
+
         $win64Path = ".\win64\scrcpy-win64-v$tag2\"
         $win32Path = ".\win32\scrcpy-win32-v$tag2\"
 
