@@ -7,13 +7,17 @@ if (!$module) {
     Import-Module PsIni
 }
 
+# Define repository name and API endpoint
 $repoName = "Genymobile/scrcpy"
 $releasesUri = "https://api.github.com/repos/$repoName/releases/latest"
-try { $tag = (Invoke-WebRequest $releasesUri | ConvertFrom-Json).tag_name }
-catch {
-  Write-Host "Error while pulling API."
-  echo "SHOULD_COMMIT=no" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-  break
+
+# Retrieve latest tag from API endpoint
+try {
+    $tag = (Invoke-RestMethod -Uri $releasesUri).tag_name
+} catch {
+    Write-Host "Error while pulling API."
+    echo "SHOULD_COMMIT=no" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+    break
 }
 $tag2 = $tag.replace('v','') #-Replace '-.*',''
 Write-Host $tag2
