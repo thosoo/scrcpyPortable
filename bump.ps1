@@ -17,20 +17,10 @@ catch {
 }
 $tag2 = $tag.replace('v','') #-Replace '-.*',''
 Write-Host $tag2
-if ($tag2 -match "alpha")
-{
-  Write-Host "Found alpha."
-  echo "SHOULD_COMMIT=no" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-}
-elseif ($tag2 -match "beta")
-{
-  Write-Host "Found beta."
-  echo "SHOULD_COMMIT=no" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-}
-elseif ($tag2 -match "RC")
-{
-  Write-Host "Found Release Candidate."
-  echo "SHOULD_COMMIT=no" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+if ($tag2 -match "alpha|beta|RC") {
+    # If tag contains one of these strings, set SHOULD_COMMIT to "no"
+    Write-Host "Found alpha, beta, or RC."
+    echo "SHOULD_COMMIT=no" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 }
 else{
     echo "UPSTREAM_TAG=$tag2" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
