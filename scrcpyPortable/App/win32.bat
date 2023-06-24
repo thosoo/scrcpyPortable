@@ -1,4 +1,2 @@
-@echo off
-.\win32\scrcpy-win32-v2.0\scrcpy.exe %* && .\win32\scrcpy-win32-v2.0\adb kill-server
-:: if the exit code is >= 1, then pause
-if errorlevel 1 pause
+@echo off`r`n.\win64\scrcpy-win64-v2.1\\scrcpy.exe %* && .\win64\scrcpy-win64-v2.1\\adb kill-server
+:: if the exit code is >= 1, then pause`r`nif errorlevel 1 pause`r`n
